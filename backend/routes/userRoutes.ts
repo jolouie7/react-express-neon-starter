@@ -2,10 +2,16 @@ import express, { Request, Response } from "express";
 import prisma from "../prisma";
 import passport from "passport";
 import bcrypt from "bcrypt";
+import { isAuthenticated } from "../middleware/auth";
 
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
+/**
+ * @description Test route
+ * @route GET /users/hello
+ * @access Public
+ */
+router.get("/hello", (req: Request, res: Response) => {
   res.status(200).json({ message: "Hello World" });
 });
 
@@ -14,7 +20,7 @@ router.get("/", (req: Request, res: Response) => {
  * @route GET /users
  * @access Public
  */
-router.get("/users", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
@@ -28,7 +34,7 @@ router.get("/users", async (req: Request, res: Response) => {
  * @route GET /users/:id
  * @access Public
  */
-router.get("/users/:id", async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.params.id },
@@ -41,12 +47,13 @@ router.get("/users/:id", async (req: Request, res: Response) => {
 
 /**
  * @description Register a new user
- * @route POST /register
+ * @route POST /users/register
  * @access Public
  */
 router.post("/register", async (req: Request, res: Response) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    console.log("req.body:", req.body);
     const user = await prisma.user.create({
       data: {
         email: req.body.email,
@@ -54,6 +61,7 @@ router.post("/register", async (req: Request, res: Response) => {
         password: hashedPassword,
       },
     });
+    console.log("req.user11:", user);
     res.json({ message: "User registered successfully", user });
   } catch (error) {
     res.status(500).json({ error: "Unable to register user" });
@@ -62,7 +70,7 @@ router.post("/register", async (req: Request, res: Response) => {
 
 /**
  * @description Login user
- * @route POST /login
+ * @route POST /users/login
  * @access Public
  */
 router.post(
@@ -75,10 +83,10 @@ router.post(
 
 /**
  * @description Logout user
- * @route GET /logout
+ * @route GET /users/logout
  * @access Private
  */
-router.get("/logout", (req: Request, res: Response) => {
+router.get("/logout", isAuthenticated, (req: Request, res: Response) => {
   req.logout((error) => {
     if (error) {
       return res.status(500).json({ error: "Unable to logout" });
