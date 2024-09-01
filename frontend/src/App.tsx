@@ -1,9 +1,10 @@
 import "./App.css";
+import LandingPage from "./components/LandingPage";
 
 function App() {
   return (
     <>
-      <h1>React Express Neon Starter!</h1>
+      <LandingPage />
     </>
   );
 }
