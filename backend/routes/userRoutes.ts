@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import prisma from "../prisma";
 import passport from "passport";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { User } from "@prisma/client";
 import { isAuthenticated } from "../middleware/auth";
 
 const router = express.Router();
@@ -73,13 +75,42 @@ router.post("/register", async (req: Request, res: Response) => {
  * @route POST /users/login
  * @access Public
  */
-router.post(
-  "/login",
-  passport.authenticate("local"),
-  (req: Request, res: Response) => {
-    res.json({ message: "Logged in successfully" });
+router.post("/login", async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not defined in the environment variables");
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.json({
+      message: "Logged in successfully",
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Unable to log in" });
   }
-);
+});
 
 /**
  * @description Logout user
@@ -94,5 +125,25 @@ router.get("/logout", isAuthenticated, (req: Request, res: Response) => {
     res.json({ message: "Logged out successfully" });
   });
 });
+
+/**
+ * @description Get current user
+ * @route GET /users/me
+ * @access Private
+ */
+router.get(
+  "/me",
+  passport.authenticate("jwt", { session: false }),
+  (req: Request, res: Response) => {
+    const user = req.user as User;
+    res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+    });
+  }
+);
 
 export default router;
