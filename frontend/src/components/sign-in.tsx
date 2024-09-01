@@ -12,52 +12,51 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export const description =
-  "A sign up form with first name, last name, email and password inside a card. There's an option to sign up with GitHub and a link to login if you already have an account";
+  "A sign in form with email and password. There's an option to sign in with Google and a link to sign up if you don't have an account.";
 
-export function SignUpForm() {
+export function SignInForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-xl">Sign Up</CardTitle>
+        <CardTitle className="text-2xl">Sign In</CardTitle>
         <CardDescription>
-          Enter your information to create an account
+          Enter your email below to login to your account
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="full-name">Full Name</Label>
-            <Input
-              id="full-name"
-              type="text"
-              placeholder="Tony Stark"
-              required
-            />
-          </div>
-          <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="tony@stark.com"
+              placeholder="m@example.com"
               required
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                to="/forgot-password"
+                className="ml-auto inline-block text-sm underline"
+              >
+                Forgot your password?
+              </Link>
+            </div>
             <Input id="password" type="password" required />
           </div>
           <Button type="submit" className="w-full">
-            Create an account
+            Login
           </Button>
           <Button variant="outline" className="w-full">
-            Sign up with GitHub
+            Login with Google
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link to="/sign-in" className="underline">
-            Sign in
+          Don&apos;t have an account?{" "}
+          <Link to="/sign-up" className="underline">
+            Sign up
           </Link>
         </div>
       </CardContent>
