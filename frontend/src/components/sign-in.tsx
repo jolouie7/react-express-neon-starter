@@ -16,7 +16,7 @@ export const description =
 
 export function SignInForm() {
   return (
-    <Card className="mx-auto mt-20 max-w-sm">
+    <Card className="mx-auto max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl">Sign In</CardTitle>
         <CardDescription>
