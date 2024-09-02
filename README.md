@@ -97,6 +97,11 @@ Before you begin, ensure you have the following installed:
   - `config/`: Configuration files (e.g., Passport setup)
   - `prisma/`: Prisma schema and migrations
 
+## Future Features
+- [ ] Oauth sign in
+- [ ] Testing
+- [ ] Improved navbar
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
