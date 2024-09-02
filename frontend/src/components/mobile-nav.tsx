@@ -31,7 +31,17 @@ const navLinks = [
   },
 ];
 
-export default function MobileNav() {
+interface MobileNavProps {
+  isSignedIn: boolean;
+  userEmail: string | null;
+  onSignOut: () => void;
+}
+
+export default function MobileNav({
+  isSignedIn,
+  userEmail,
+  onSignOut,
+}: MobileNavProps) {
   return (
     <nav className="fixed inset-x-0 top-0 z-50 bg-white shadow-sm dark:bg-gray-950/90">
       <div className="mx-auto w-full max-w-7xl px-4">
@@ -46,10 +56,8 @@ export default function MobileNav() {
             </DrawerTrigger>
             <DrawerContent>
               <DrawerHeader>
-                <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-                <DrawerDescription>
-                  This action cannot be undone.
-                </DrawerDescription>
+                <DrawerTitle>Menu</DrawerTitle>
+                <DrawerDescription>Navigate through our site</DrawerDescription>
               </DrawerHeader>
               <DrawerFooter>
                 {navLinks.map((link, idx) => (
@@ -58,15 +66,35 @@ export default function MobileNav() {
                     variant="outline"
                     className="flex items-center text-sm font-medium transition-colors hover:underline"
                   >
-                    {link.name}
+                    <Link to={link.href}>{link.name}</Link>
                   </Button>
                 ))}
-                <Button
-                  className="flex items-center text-sm font-medium transition-colors hover:underline"
-                  onClick={() => (window.location.href = "/sign-in")}
-                >
-                  Sign In
-                </Button>
+                {isSignedIn ? (
+                  <>
+                    <span className="text-sm font-medium">{userEmail}</span>
+                    <Button
+                      className="flex items-center text-sm font-medium transition-colors hover:underline"
+                      onClick={onSignOut}
+                    >
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      className="flex items-center text-sm font-medium transition-colors hover:underline"
+                      onClick={() => (window.location.href = "/sign-in")}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      className="flex items-center text-sm font-medium transition-colors hover:underline"
+                      onClick={() => (window.location.href = "/sign-up")}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
