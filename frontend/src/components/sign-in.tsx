@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../hooks/redux";
+import {
+  signInSuccess,
+  setLoading,
+  setError,
+} from "../features/user/userSlice";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -28,6 +32,7 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -36,28 +41,21 @@ export function SignInForm() {
     resolver: zodResolver(signInSchema),
   });
 
-  const signInMutation = useMutation({
-    mutationFn: (data: SignInFormValues) =>
-      axios.post(
-        "http://localhost:8080/users/login",
-        {
-          email: data.email,
-          password: data.password,
-        },
-        { withCredentials: true },
-      ),
-    onSuccess: () => {
-      // Redirect to dashboard or home page
+  const onSubmit = async (data: SignInFormValues) => {
+    setIsLoading(true);
+    dispatch(setLoading(true));
+    try {
+      dispatch(signInSuccess(data.email));
+      toast.success("Successfully signed in!");
       navigate("/");
-    },
-    onError: (error) => {
+    } catch (error) {
       console.error("Sign-in error:", error);
-      // TODO: Handle sign-in error (e.g., display error message to user)
-    },
-  });
-
-  const onSubmit = (data: SignInFormValues) => {
-    signInMutation.mutate(data);
+      dispatch(setError("Failed to sign in. Please try again."));
+      toast.error("Failed to sign in. Please try again.");
+    } finally {
+      setIsLoading(false);
+      dispatch(setLoading(false));
+    }
   };
 
   return (
@@ -104,7 +102,7 @@ export function SignInForm() {
             )}
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Login"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
           <Button variant="outline" className="flex w-full items-center gap-2">
             <svg

@@ -10,12 +10,14 @@ import { SignInForm } from "./components/sign-in.tsx";
 import Navbar from "./components/navbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { store } from "./store.ts";
+import { Toaster } from "@/components/ui/sonner";
 
 const Layout = () => (
   <>
     <Navbar />
     <div className="mt-14 pt-4">
       <Outlet />
+      <Toaster richColors />
     </div>
   </>
 );

@@ -6,6 +6,12 @@ import * as z from "zod";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import {
+  signInSuccess,
+  setLoading,
+  setError,
+} from "../features/user/userSlice";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +23,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -29,6 +36,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -44,17 +52,23 @@ export function SignUpForm() {
         email: data.email,
         password: data.password,
       }),
-    onSuccess: () => {
-      // Redirect to sign-in page or show success message
+    onSuccess: (response) => {
+      setIsLoading(false);
+      dispatch(signInSuccess(response.data));
+      toast.success("Account created successfully!");
       navigate("/sign-in");
     },
     onError: (error) => {
+      setIsLoading(false);
       console.error("Sign-up error:", error);
-      // TODO: Handle sign-up error (e.g., display error message to user)
+      dispatch(setError(error.message));
+      toast.error(`Sign-up failed: ${error.message}`);
     },
   });
 
   const onSubmit = (data: SignUpFormValues) => {
+    setIsLoading(true);
+    dispatch(setLoading(true));
     signUpMutation.mutate(data);
   };
 
