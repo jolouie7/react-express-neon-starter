@@ -124,13 +124,9 @@ router.post("/login", async (req: Request, res: Response) => {
  * @route GET /users/logout
  * @access Private
  */
-router.get("/logout", isAuthenticated, (req: Request, res: Response) => {
-  req.logout((error) => {
-    if (error) {
-      return res.status(500).json({ error: "Unable to logout" });
-    }
-    res.json({ message: "Logged out successfully" });
-  });
+router.get("/logout", (req: Request, res: Response) => {
+  res.clearCookie('token');
+  res.json({ message: "Logged out successfully" });
 });
 
 /**
