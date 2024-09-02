@@ -8,10 +8,10 @@ export default function LandingPage() {
             Certified Digital Marketing Professional
           </div>
           <h1 className="mb-4 text-5xl font-bold leading-tight">
-            Start your project management with Onion
+            Start your project management with Neon
           </h1>
           <p className="mb-8 text-gray-400">
-            Onion is a cloud-based project management tool designed to help you
+            Neon is a cloud-based project management tool designed to help you
             and your team stay organized and productive.
           </p>
           <div className="flex space-x-4">
@@ -26,7 +26,7 @@ export default function LandingPage() {
         <div className="hidden lg:block">
           <img
             src="https://placehold.co/700x500"
-            alt="Onion Dashboard"
+            alt="Neon Dashboard"
             className="h-full w-full object-cover"
           />
         </div>
@@ -76,13 +76,13 @@ export default function LandingPage() {
                 name: "John Doe",
                 role: "Project Manager",
                 quote:
-                  "Onion has revolutionized how we manage our projects. It's intuitive and powerful.",
+                  "Neon has revolutionized how we manage our projects. It's intuitive and powerful.",
               },
               {
                 name: "Jane Smith",
                 role: "Team Lead",
                 quote:
-                  "The collaboration features in Onion have greatly improved our team's productivity.",
+                  "The collaboration features in Neon have greatly improved our team's productivity.",
               },
             ].map((testimonial, index) => (
               <div key={index} className="rounded-lg bg-white p-6 shadow-md">
@@ -102,7 +102,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-4 text-3xl font-bold">Ready to Get Started?</h2>
           <p className="mb-8">
-            Join thousands of teams already using Onion to boost their
+            Join thousands of teams already using Neon to boost their
             productivity.
           </p>
           <button className="rounded-md bg-white px-6 py-3 font-semibold text-indigo-600 transition duration-300 hover:bg-indigo-50">
