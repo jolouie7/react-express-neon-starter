@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import routes from "./routes/routes";
 import passport from "passport";
 import "./config/passport";
+import cookieParser from 'cookie-parser';
 
 // Load environment variables
 dotenv.config();
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(passport.initialize());
+app.use(cookieParser());
 
 // Use routes
 app.use("/", routes);
