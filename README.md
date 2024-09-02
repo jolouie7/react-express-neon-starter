@@ -22,6 +22,10 @@ This project is a starter kit built with React, TypeScript and Redux Toolkit. It
 - Passport JWT
 - bcrypt
 
+## Preview
+
+![Project Preview](frontend/public/landing-page-preview.png)
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
