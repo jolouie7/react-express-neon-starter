@@ -7,6 +7,7 @@ import ErrorPage from "./components/error-page";
 import { SignUpForm } from "./components/sign-up.tsx";
 import { SignInForm } from "./components/sign-in.tsx";
 import Navbar from "./components/navbar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const Layout = () => (
   <>
@@ -41,8 +42,12 @@ const router = createBrowserRouter([
   },
 ]);
 
+const queryClient = new QueryClient();
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </StrictMode>,
 );

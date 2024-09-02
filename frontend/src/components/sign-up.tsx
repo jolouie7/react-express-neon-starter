@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import axios from "axios";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +28,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -33,11 +37,25 @@ export function SignUpForm() {
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignUpFormValues) => {
-    setIsLoading(true);
-    // TODO: Implement sign-up logic
-    console.log(data);
-    setIsLoading(false);
+  const signUpMutation = useMutation({
+    mutationFn: (data: SignUpFormValues) =>
+      axios.post("http://localhost:8080/users/register", {
+        name: data.fullName,
+        email: data.email,
+        password: data.password,
+      }),
+    onSuccess: () => {
+      // Redirect to sign-in page or show success message
+      navigate("/sign-in");
+    },
+    onError: (error) => {
+      console.error("Sign-up error:", error);
+      // TODO: Handle sign-up error (e.g., display error message to user)
+    },
+  });
+
+  const onSubmit = (data: SignUpFormValues) => {
+    signUpMutation.mutate(data);
   };
 
   return (
