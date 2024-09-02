@@ -1,4 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +15,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export const description =
-  "A sign in form with email and password. There's an option to sign in with Google and a link to sign up if you don't have an account.";
+const signInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type SignInFormValues = z.infer<typeof signInSchema>;
 
 export function SignInForm() {
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInFormValues>({
+    resolver: zodResolver(signInSchema),
+  });
+
+  const onSubmit = async (data: SignInFormValues) => {
+    setIsLoading(true);
+    // TODO: Implement sign-in logic
+    console.log(data);
+    setIsLoading(false);
+  };
+
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -24,15 +48,19 @@ export function SignInForm() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
-              placeholder="m@example.com"
+              placeholder="tony@stark.com"
+              {...register("email")}
               required
             />
+            {errors.email && (
+              <p className="text-sm text-red-500">{errors.email.message}</p>
+            )}
           </div>
           <div className="grid gap-2">
             <div className="flex items-center">
@@ -44,10 +72,18 @@ export function SignInForm() {
                 Forgot your password?
               </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input
+              id="password"
+              type="password"
+              {...register("password")}
+              required
+            />
+            {errors.password && (
+              <p className="text-sm text-red-500">{errors.password.message}</p>
+            )}
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Signing in..." : "Login"}
           </Button>
           <Button variant="outline" className="flex w-full items-center gap-2">
             <svg
@@ -76,7 +112,7 @@ export function SignInForm() {
             </svg>
             Login with Google
           </Button>
-        </div>
+        </form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
           <Link to="/sign-up" className="underline">
