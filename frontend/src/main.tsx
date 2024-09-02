@@ -7,13 +7,15 @@ import ErrorPage from "./components/error-page";
 import { SignUpForm } from "./components/sign-up.tsx";
 import { SignInForm } from "./components/sign-in.tsx";
 import Navbar from "./components/navbar";
-import Footer from "./components/footer";
 
 const Layout = () => (
   <>
     <Navbar />
-    <Outlet />
-    <Footer />
+    <div className="mt-14 pt-4">
+      {" "}
+      {/* Add this wrapper div */}
+      <Outlet />
+    </div>
   </>
 );
 
