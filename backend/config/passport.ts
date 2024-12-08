@@ -31,22 +31,34 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        // Check if user exists
+        // First try to find user by googleId
         let user = await prisma.user.findUnique({
-          where: { email: profile.emails![0].value }
+          where: { googleId: profile.id }
         });
 
         if (!user) {
-          // Create new user if doesn't exist
-          user = await prisma.user.create({
-            data: {
-              email: profile.emails![0].value,
-              name: profile.displayName,
-              googleId: profile.id,
-              // Set a random password or handle it differently based on your needs
-              password: Math.random().toString(36).slice(-8)
-            }
+          // If not found by googleId, try to find by email
+          user = await prisma.user.findUnique({
+            where: { email: profile.emails![0].value }
           });
+
+          if (user) {
+            // If user exists with email but no googleId, update their account
+            user = await prisma.user.update({
+              where: { email: profile.emails![0].value },
+              data: { googleId: profile.id }
+            });
+          } else {
+            // Create new user if doesn't exist at all
+            user = await prisma.user.create({
+              data: {
+                email: profile.emails![0].value,
+                name: profile.displayName,
+                googleId: profile.id,
+                password: Math.random().toString(36).slice(-8)
+              }
+            });
+          }
         }
 
         return done(null, user);
