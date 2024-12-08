@@ -68,12 +68,14 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Button variant="outline" size="sm">
-                      <Link to="/sign-in">Sign in</Link>
-                    </Button>
-                    <Button size="sm">
-                      <Link to="/sign-up">Sign up</Link>
-                    </Button>
+                    <Link to="/sign-in">
+                      <Button variant="outline" size="sm">
+                        Sign in
+                      </Button>
+                    </Link>
+                    <Link to="/sign-up">
+                      <Button size="sm">Sign up</Button>
+                    </Link>
                   </>
                 )}
               </div>
