@@ -149,4 +149,42 @@ router.get(
   }
 );
 
+/**
+ * @description Google OAuth login
+ * @route GET /users/auth/google
+ * @access Public
+ */
+router.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+/**
+ * @description Google OAuth callback
+ * @route GET /users/auth/google/callback
+ * @access Public
+ */
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { session: false }),
+  async (req: Request, res: Response) => {
+    try {
+      const user = req.user as User;
+      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, {
+        expiresIn: "1d",
+      });
+
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      });
+
+      // Redirect to frontend after successful login
+      res.redirect(process.env.FRONTEND_URL || "http://localhost:3000");
+    } catch (error) {
+      res.status(500).json({ error: "Authentication failed" });
+    }
+  }
+);
+
 export default router;
