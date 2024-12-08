@@ -1,7 +1,6 @@
-import express, { Request, Response } from "express";
-import prisma from "../prisma";
+import express from "express";
 import { isAuthenticated } from "../middleware/auth";
-import { User } from "@prisma/client";
+import { postController } from "../controllers/postController";
 
 const router = express.Router();
 
@@ -10,87 +9,34 @@ const router = express.Router();
  * @route GET /posts
  * @access Private
  */
-router.get("/", isAuthenticated, async (req: Request, res: Response) => {
-  try {
-    const posts = await prisma.post.findMany();
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ error: "Unable to fetch posts" });
-  }
-});
+router.get("/", isAuthenticated, postController.getAllPosts);
+
+/**
+ * @description Get a post by ID
+ * @route GET /posts/:id
+ * @access Private
+ */
+router.get("/:id", isAuthenticated, postController.getPostById);
 
 /**
  * @description Create a new post
  * @route POST /posts
  * @access Private
  */
-router.post("/", isAuthenticated, async (req: Request, res: Response) => {
-  try {
-    const user = req.user as User;
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const post = await prisma.post.create({
-      data: {
-        title: req.body.title,
-        content: req.body.content,
-        authorId: user.id,
-      },
-    });
-
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: "Unable to create post" });
-  }
-});
+router.post("/", isAuthenticated, postController.createPost);
 
 /**
  * @description Update a post by ID
  * @route PUT /posts/:id
  * @access Private
  */
-router.put("/:id", isAuthenticated, async (req: Request, res: Response) => {
-  try {
-    const user = req.user as User;
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    const post = await prisma.post.update({
-      where: { id: req.params.id, authorId: user.id },
-      data: {
-        title: req.body.title,
-        content: req.body.content,
-      },
-    });
-
-    res.json(post);
-  } catch (error) {
-    res.status(500).json({ error: "Unable to update post" });
-  }
-});
+router.put("/:id", isAuthenticated, postController.updatePost);
 
 /**
- * @description Delete a post by ID
+ * @description Delete a post
  * @route DELETE /posts/:id
  * @access Private
  */
-router.delete("/:id", isAuthenticated, async (req: Request, res: Response) => {
-  try {
-    const user = req.user as User;
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-
-    await prisma.post.delete({
-      where: { id: req.params.id, authorId: user.id },
-    });
-
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: "Unable to delete post" });
-  }
-});
+router.delete("/:id", isAuthenticated, postController.deletePost);
 
 export default router;
